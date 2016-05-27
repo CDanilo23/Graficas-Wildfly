@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html" 
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"/>
+            <script>
+                google.charts.load('current', {'packages': ['corechart']});
+                google.charts.setOnLoadCallback(drawChart);
+                function drawChart() {
+                    var data = google.visualization.arrayToDataTable([
+                        ['Mon', 20, 28, 38, 45],
+                        ['Tue', 31, 38, 55, 66],
+                        ['Wed', 50, 55, 77, 80],
+                        ['Thu', 77, 77, 66, 50],
+                        ['Fri', 68, 66, 22, 15],
+                        ['Sat', 99, 66, 22, 15]
+                                // Treat first row as data as well.
+                    ], true);
+
+                    var options = {
+                        legend: 'none'
+                    };
+
+                    var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
+
+                    chart.draw(data, options);
+                }
+               
+            </script>
+
+        </h:head>
+        <h:body>
+            <h:form id="form">
+
+                <!--<div id="chart_div" style="width: 900px; height: 500px;"/>-->
+
+                <!--                <p:panel header="Grafico columnas">
+                                    <p:chart type="line" model="#{chartView.multiAxisModel}" style="height:400px;"/>
+                                </p:panel>
+-->                                <p:panel header="Grafico velas">
+                                    <p:chart type="ohlc" model="#{chartView.ohlcChartModel}" style="width:1200px;height:500px"/>
+                                </p:panel>
+
+            </h:form>
+        </h:body>
+        <body>
+
+        </body>
+    </html>
+</f:view>
