@@ -11,7 +11,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartSeries;
@@ -34,18 +40,26 @@ public class ChartView implements Serializable {
     private Connection connection;
     private PreparedStatement ps;
     private ResultSet rs;
+    private VelasDTO velasDTO;
+    private List<VelasDTO> listVelas;
+
+    @EJB
+    SpBusinessServiceLocal spBusinessServiceLocal;
+
 
     public ChartView() {
         ohlcChartModel = new OhlcChartModel();
+        listVelas = new ArrayList<VelasDTO>();
         try {
+
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/infovalmer", "root", "");
             ps = connection.prepareStatement("select * from sp_valores_puntos");
             rs = ps.executeQuery();
-             while(rs.next()){
-                 String open = rs.getString(1);
-                 System.out.println(open);
-        }
+            while (rs.next()) {
+                velasDTO = new VelasDTO(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                ohlcChartModel.add(new OhlcChartSeries(velasDTO.getVela(), velasDTO.getOpen(), velasDTO.getMaximo(), velasDTO.getMinimo(), velasDTO.getClose()));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,14 +68,9 @@ public class ChartView implements Serializable {
 
     @PostConstruct
     public void init() {
-       
 
 //        createMultiAxisModel();
         crearGraficoVelas();
-    }
-
-    public LineChartModel getMultiAxisModel() {
-        return multiAxisModel;
     }
 
     private void createMultiAxisModel() {
@@ -110,25 +119,25 @@ public class ChartView implements Serializable {
     }
 
     private void crearGraficoVelas() {
-        ohlcChartModel = new OhlcChartModel();
+//        ohlcChartModel = new OhlcChartModel();
 
-        OhlcChartSeries vela = new OhlcChartSeries(1, 1.91526635139091, 6, 0.8, 3.23382938680922);
-
+//        OhlcChartSeries vela = new OhlcChartSeries(1, 1.91526635139091, 6, 0.8, 3.23382938680922);
 //        for (int i = 1; i < 13; i++) {
 //            ohlcChartModel.add(new OhlcChartSeries(i, Math.random() * 80 + 80, Math.random() * 50 + 110, Math.random() * 20 + 80, Math.random() * 80 + 80));
 //        }
-        ohlcChartModel.add(new OhlcChartSeries(1, 1.915266, 6.000000, 0, 3.233829));
-        ohlcChartModel.add(new OhlcChartSeries(2, 0.919097, 6.012000, 0, 1.919097));
-        ohlcChartModel.add(new OhlcChartSeries(3, 0.422935, 6.024024, 0, 1.922935));
-        ohlcChartModel.add(new OhlcChartSeries(4, 1.926781, 6.036072, 0, 0.235235));
-        ohlcChartModel.add(new OhlcChartSeries(5, 1.930635, 6.048144, 0, 0.235706));
-        ohlcChartModel.add(new OhlcChartSeries(6, 0.934496, 6.036072, 0, 1.934496));
-        ohlcChartModel.add(new OhlcChartSeries(7, 5.000000, 6.072361, 0, 0.236649));
-        ohlcChartModel.add(new OhlcChartSeries(8, 1.942242, 6.084506, 0, 0.237123));
-        ohlcChartModel.add(new OhlcChartSeries(9, 1.946126, 6.096675, 0, 0.237597));
-        ohlcChartModel.add(new OhlcChartSeries(10, 1.950018, 6.108868, 0, 0.238072));
-        ohlcChartModel.add(new OhlcChartSeries(11, 1.953918, 6.121086, 0, 0.238548));
-        ohlcChartModel.add(new OhlcChartSeries(12, 1.957826, 6.133328, 0, 0.239025));
+//        ohlcChartModel.add(new OhlcChartSeries(1, 1.915266, 6.000000, 0, 3.233829));
+//        ohlcChartModel.add(new OhlcChartSeries(2, 0.919097, 6.012000, 0, 1.919097));
+//        ohlcChartModel.add(new OhlcChartSeries(3, 0.422935, 6.024024, 0, 1.922935));
+//        ohlcChartModel.add(new OhlcChartSeries(4, 1.926781, 6.036072, 0, 0.235235));
+//        ohlcChartModel.add(new OhlcChartSeries(5, 1.930635, 6.048144, 0, 0.235706));
+//        ohlcChartModel.add(new OhlcChartSeries(6, 0.934496, 6.036072, 0, 1.934496));
+//        ohlcChartModel.add(new OhlcChartSeries(7, 5.000000, 6.072361, 0, 0.236649));
+//        ohlcChartModel.add(new OhlcChartSeries(8, 1.942242, 6.084506, 0, 0.237123));
+//        ohlcChartModel.add(new OhlcChartSeries(9, 1.946126, 6.096675, 0, 0.237597));
+//        ohlcChartModel.add(new OhlcChartSeries(10, 1.950018, 6.108868, 0, 0.238072));
+//        ohlcChartModel.add(new OhlcChartSeries(11, 1.953918, 6.121086, 0, 0.238548));
+//        ohlcChartModel.add(new OhlcChartSeries(12, 1.957826, 6.133328, 0, 0.239025));
+        spBusinessServiceLocal.listarValoresVelas();
 
         ohlcChartModel.setTitle("Candlestick");
         ohlcChartModel.setCandleStick(true);
@@ -138,6 +147,18 @@ public class ChartView implements Serializable {
 
     public OhlcChartModel getOhlcChartModel() {
         return ohlcChartModel;
+    }
+
+    public VelasDTO getVelasDTO() {
+        return velasDTO;
+    }
+
+    public void setVelasDTO(VelasDTO velasDTO) {
+        this.velasDTO = velasDTO;
+    }
+
+    public LineChartModel getMultiAxisModel() {
+        return multiAxisModel;
     }
 
 }
