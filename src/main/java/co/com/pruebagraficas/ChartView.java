@@ -50,20 +50,6 @@ public class ChartView implements Serializable {
     public ChartView() {
         ohlcChartModel = new OhlcChartModel();
         listVelas = new ArrayList<VelasDTO>();
-        try {
-
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/infovalmer", "root", "");
-            ps = connection.prepareStatement("select * from sp_valores_puntos");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                velasDTO = new VelasDTO(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
-                ohlcChartModel.add(new OhlcChartSeries(velasDTO.getVela(), velasDTO.getOpen(), velasDTO.getMaximo(), velasDTO.getMinimo(), velasDTO.getClose()));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     @PostConstruct
